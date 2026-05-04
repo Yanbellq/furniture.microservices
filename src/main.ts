@@ -1,11 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from '@/core/app.module';
-import { useContainer } from 'class-validator';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { LoggingInterceptor } from '@/core/interceptors';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
+
+import { AppModule } from '@/core/app.module';
 import { getCorsConfig, getValidationConfig } from '@/core/config';
+import { LoggingInterceptor } from '@/core/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -42,7 +43,7 @@ async function bootstrap() {
   logger.log(`Swagger: ${host}/docs`);
 }
 
-bootstrap().catch((err) => {
+bootstrap().catch(err => {
   new Logger('Bootstrap').error(err);
   process.exit(1);
 });
