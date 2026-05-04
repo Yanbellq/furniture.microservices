@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { CatalogController, ProductController } from './api/controllers';
-import { CatalogService, ProductService } from './application/services';
+import { ProductController } from './api/controllers';
+import { ProductService } from './application/services';
 import { ProductRepository } from './infrastructure';
 
 @Module({
-  controllers: [CatalogController, ProductController],
+  controllers: [ProductController],
   providers: [
-    CatalogService,
     ProductService,
     {
       provide: 'IProductRepository',

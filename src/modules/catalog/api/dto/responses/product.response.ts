@@ -1,7 +1,24 @@
+import {
+  IsBool,
+  IsId,
+  IsSku,
+  IsTitle,
+  IsWholesalePrice,
+} from '@/common/validators';
+
 export class ProductResponse {
+  @IsId()
   id!: string;
+
+  @IsSku()
   sku!: string;
-  title!: string; // В API називаємо title замість name для прикладу мапінгу
-  wholesalePrice!: number;
+
+  @IsTitle()
+  title!: string; // Mapping work example
+
+  @IsWholesalePrice()
+  wholesalePrice!: number; // Mapping work example
+
+  @IsBool()
   isAvailable!: boolean;
 }

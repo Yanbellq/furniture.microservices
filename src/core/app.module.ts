@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { RouterModule } from '@nestjs/core';
 
 import { PrismaModule } from '@/infrastructure/prisma/prisma.module';
 import { CatalogModule } from '@/modules/catalog/catalog.module';
@@ -18,6 +19,12 @@ import { AppService } from './app.service';
     CatalogModule,
     IdentityModule,
     OrderModule,
+    RouterModule.register([
+      {
+        path: 'catalog',
+        module: CatalogModule,
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService],
