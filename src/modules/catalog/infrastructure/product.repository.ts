@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '@/infrastructure/prisma';
 import { IProductRepository } from '@/modules/catalog/domain/contracts';
-
-import { Product } from '../domain/entities';
+import { Product } from '@/modules/catalog/domain/entities';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
@@ -19,7 +18,7 @@ export class ProductRepository implements IProductRepository {
           item.name,
           Number(item.price),
           item.stock,
-          item.description,
+          item.description ?? undefined,
         ),
     );
   }
@@ -33,7 +32,20 @@ export class ProductRepository implements IProductRepository {
       item.name,
       Number(item.price),
       item.stock,
-      item.description,
+      item.description ?? undefined,
+    );
+  }
+
+  async findBySku(sku: string): Promise<Product | null> {
+    const item = await this.prisma.product.findUnique({ where: { sku } });
+    if (!item) return null;
+    return new Product(
+      item.id,
+      item.sku,
+      item.name,
+      Number(item.price),
+      item.stock,
+      item.description ?? undefined,
     );
   }
 
@@ -59,7 +71,7 @@ export class ProductRepository implements IProductRepository {
       saved.name,
       Number(saved.price),
       saved.stock,
-      saved.description,
+      saved.description ?? undefined,
     );
   }
 }
