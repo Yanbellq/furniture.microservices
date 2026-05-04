@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CLIENT
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// --- Module 1: Identity (Контрагенти та Користувачі) ---
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Має бути замаскований мапером
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  role      UserRole @default(CLIENT)
+  companyId String?  @map("company_id")
+  company   Company? @relation(fields: [companyId], references: [id])
+  orders    Order[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  edrpou      String   @unique // Для українського B2B
+  address     String?
+  users       User[]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("companies")
+}
+
+// --- Module 2: Catalog (Товари та Ціни) ---
+
+model Product {
+  id             String      @id @default(uuid())
+  sku            String      @unique // Артикул (напр. "HINGE-001")
+  name           String
+  description    String?
+  price          Decimal     @db.Decimal(10, 2)
+  stock          Int         @default(0)
+  categoryId     String?     @map("category_id")
+  category       Category?   @relation(fields: [categoryId], references: [id])
+  orderItems     OrderItem[]
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+
+  @@map("categories")
+}
+
+// --- Module 3: Order (Замовлення) ---
+
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber Int         @unique @default(autoincrement()) @map("order_number")
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2) @map("total_amount")
+
+  userId      String @map("user_id")
+  user        User        @relation(fields: [userId], references: [id])
+
+  items       OrderItem[]
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  priceAtPurchase Decimal @db.Decimal(10, 2) @map("price_at_purchase") // Фіксуємо ціну на момент замовлення
+
+  orderId   String @map("order_id")
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  productId String @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
