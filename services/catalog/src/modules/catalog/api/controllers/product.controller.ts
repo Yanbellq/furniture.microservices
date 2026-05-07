@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, Version } from '@nestjs/common';
 import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  Version,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -12,13 +21,16 @@ import {
   ApiNotFoundError,
   ApiValidationError,
 } from '@/common/validators';
+import { JwtAuthGuard } from '@/core/guards';
 import { CreateProductRequest } from '@/modules/catalog/api/dto/requests';
 import { ProductResponse } from '@/modules/catalog/api/dto/responses';
 import { ProductService } from '@/modules/catalog/application/services';
 
 @ApiTags('Product')
-@Controller('product')
+@ApiBearerAuth()
 @ApiDiedError()
+@Controller('product')
+@UseGuards(JwtAuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

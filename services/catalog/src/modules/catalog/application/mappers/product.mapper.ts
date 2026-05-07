@@ -19,7 +19,7 @@ export class ProductMapper {
       id: entity.id!,
       sku: entity.sku,
       title: entity.name,
-      wholesalePrice: entity.price,
+      wholesalePrice: Number(entity.price),
       isAvailable: entity.stock > 0,
     };
   }

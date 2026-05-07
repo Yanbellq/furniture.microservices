@@ -4,10 +4,13 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  private logger = new Logger('HTTP');
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -22,6 +25,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getResponse()
         : 'Internal server error';
+
+    if (Number(status) === HttpStatus.UNAUTHORIZED) {
+      // Дістаємо повідомлення безпечно
+      const errorMessage =
+        typeof message === 'object'
+          ? (message as any).message || 'Unauthorized'
+          : message;
+
+      this.logger.error(
+        `${request.method} ${request.url} ${status} [Unauthorized Error, Message: ${errorMessage}]`,
+      );
+    }
 
     response.status(status).json({
       statusCode: status,

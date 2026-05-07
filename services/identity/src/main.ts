@@ -8,7 +8,7 @@ import { AppModule } from '@/core/app.module';
 import { getCorsConfig, getValidationConfig } from '@/core/config';
 import { LoggingInterceptor } from '@/core/interceptors';
 
-import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { AllExceptionsFilter } from './core/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
